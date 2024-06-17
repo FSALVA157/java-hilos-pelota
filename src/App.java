@@ -1,5 +1,6 @@
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -22,6 +23,30 @@ public class App {
 
 
 }// end of class App
+
+//clase Runnable que utiliza un hilo
+class PelotaHilo implements Runnable{
+    private Pelota pelota;
+    private Component componente;
+
+    public PelotaHilo(Pelota pelota, Component componente){
+        this.pelota = pelota;
+        this.componente = componente;
+    }
+
+    @Override
+    public void run() {
+        for(int i=1; i < 3000; i++){
+            pelota.mueve_pelota(componente.getBounds());
+            componente.paint(componente.getGraphics());
+            try {
+                Thread.sleep(4);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
 
 class Pelota{
 
@@ -121,10 +146,20 @@ class MarcoRebote extends JFrame{
     public void comienza_el_juego(){
         Pelota pelota = new Pelota();
         lamina.add(pelota);
-        for(int i=1; i < 3000; i++){
-            pelota.mueve_pelota(lamina.getBounds());
-            lamina.paint(getGraphics());
-        }
+        Runnable pelota_instancia = new PelotaHilo(pelota, lamina);
+
+        Thread hilo = new Thread(pelota_instancia);
+        hilo.start();
+
+        // for(int i=1; i < 3000; i++){
+        //     pelota.mueve_pelota(lamina.getBounds());
+        //     lamina.paint(lamina.getGraphics());
+        //     try {
+        //         Thread.sleep(4);
+        //     } catch (Exception e) {
+        //         e.printStackTrace();
+        //     }
+        // }
     }
 
     private LaminaPelota lamina;
